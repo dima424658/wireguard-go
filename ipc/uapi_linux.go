@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"golang.org/x/sys/unix"
-	"golang.zx2c4.com/wireguard/rwcancel"
+	"github.com/dima424658/wireguard-go/rwcancel"
 )
 
 type UAPIListener struct {

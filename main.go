@@ -15,10 +15,10 @@ import (
 	"strconv"
 	"syscall"
 
-	"golang.zx2c4.com/wireguard/conn"
-	"golang.zx2c4.com/wireguard/device"
-	"golang.zx2c4.com/wireguard/ipc"
-	"golang.zx2c4.com/wireguard/tun"
+	"github.com/dima424658/wireguard-go/conn"
+	"github.com/dima424658/wireguard-go/device"
+	"github.com/dima424658/wireguard-go/ipc"
+	"github.com/dima424658/wireguard-go/tun"
 )
 
 const (
