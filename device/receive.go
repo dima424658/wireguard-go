@@ -117,7 +117,12 @@ func (device *Device) RoutineReceiveIncoming(recv conn.ReceiveFunc) {
 		// check size of packet
 
 		packet := buffer[:size]
-		msgType := binary.LittleEndian.Uint32(packet[:4])
+		garbage := binary.LittleEndian.Uint32(packet[0:4])
+		if garbage != ObfuscateLow {
+			continue
+		}
+
+		msgType := binary.LittleEndian.Uint32(packet[4:8])
 
 		var okay bool
 

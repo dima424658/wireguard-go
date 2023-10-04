@@ -375,10 +375,12 @@ func (device *Device) RoutineEncryption(id int) {
 		// populate header fields
 		header := elem.buffer[:MessageTransportHeaderSize]
 
-		fieldType := header[0:4]
-		fieldReceiver := header[4:8]
-		fieldNonce := header[8:16]
+		garbage := header[0:4]
+		fieldType := header[4:8]
+		fieldReceiver := header[8:12]
+		fieldNonce := header[12:20]
 
+		binary.LittleEndian.PutUint32(garbage, ObfuscateLow)
 		binary.LittleEndian.PutUint32(fieldType, MessageTransportType)
 		binary.LittleEndian.PutUint32(fieldReceiver, elem.keypair.remoteIndex)
 		binary.LittleEndian.PutUint64(fieldNonce, elem.nonce)

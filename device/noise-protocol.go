@@ -53,26 +53,31 @@ const (
 )
 
 const (
-	MessageInitiationType  = 1
-	MessageResponseType    = 2
-	MessageCookieReplyType = 3
-	MessageTransportType   = 4
+	ObfuscateHigh = 0xC8ED0000
+	ObfuscateLow  = 0xDEFE
 )
 
 const (
-	MessageInitiationSize      = 148                                           // size of handshake initiation message
-	MessageResponseSize        = 92                                            // size of response message
-	MessageCookieReplySize     = 64                                            // size of cookie reply message
-	MessageTransportHeaderSize = 16                                            // size of data preceding content in transport message
+	MessageInitiationType  = ObfuscateHigh + 0x0001
+	MessageResponseType    = ObfuscateHigh + 0x0002
+	MessageCookieReplyType = ObfuscateHigh + 0x0003
+	MessageTransportType   = ObfuscateHigh + 0x0004
+)
+
+const (
+	MessageInitiationSize      = 148 + 4                                       // size of handshake initiation message
+	MessageResponseSize        = 92 + 4                                        // size of response message
+	MessageCookieReplySize     = 64 + 4                                        // size of cookie reply message
+	MessageTransportHeaderSize = 16 + 4                                        // size of data preceding content in transport message
 	MessageTransportSize       = MessageTransportHeaderSize + poly1305.TagSize // size of empty transport
 	MessageKeepaliveSize       = MessageTransportSize                          // size of keepalive
 	MessageHandshakeSize       = MessageInitiationSize                         // size of largest handshake related message
 )
 
 const (
-	MessageTransportOffsetReceiver = 4
-	MessageTransportOffsetCounter  = 8
-	MessageTransportOffsetContent  = 16
+	MessageTransportOffsetReceiver = 4 + 4
+	MessageTransportOffsetCounter  = 8 + 4
+	MessageTransportOffsetContent  = 16 + 4
 )
 
 /* Type is an 8-bit field, followed by 3 nul bytes,
@@ -82,6 +87,7 @@ const (
  */
 
 type MessageInitiation struct {
+	Garbarge  uint32
 	Type      uint32
 	Sender    uint32
 	Ephemeral NoisePublicKey
@@ -92,6 +98,7 @@ type MessageInitiation struct {
 }
 
 type MessageResponse struct {
+	Garbarge  uint32
 	Type      uint32
 	Sender    uint32
 	Receiver  uint32
@@ -102,6 +109,7 @@ type MessageResponse struct {
 }
 
 type MessageTransport struct {
+	Garbarge uint32
 	Type     uint32
 	Receiver uint32
 	Counter  uint64
@@ -109,6 +117,7 @@ type MessageTransport struct {
 }
 
 type MessageCookieReply struct {
+	Garbarge uint32
 	Type     uint32
 	Receiver uint32
 	Nonce    [chacha20poly1305.NonceSizeX]byte
@@ -194,6 +203,7 @@ func (device *Device) CreateMessageInitiation(peer *Peer) (*MessageInitiation, e
 	handshake.mixHash(handshake.remoteStatic[:])
 
 	msg := MessageInitiation{
+		Garbarge:  ObfuscateLow,
 		Type:      MessageInitiationType,
 		Ephemeral: handshake.localEphemeral.publicKey(),
 	}
@@ -367,6 +377,7 @@ func (device *Device) CreateMessageResponse(peer *Peer) (*MessageResponse, error
 	}
 
 	var msg MessageResponse
+	msg.Garbarge = ObfuscateLow
 	msg.Type = MessageResponseType
 	msg.Sender = handshake.localIndex
 	msg.Receiver = handshake.remoteIndex

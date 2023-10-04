@@ -153,6 +153,7 @@ func (st *CookieChecker) CreateReply(
 	smac1 := smac2 - blake2s.Size128
 
 	reply := new(MessageCookieReply)
+	reply.Garbarge = ObfuscateLow
 	reply.Type = MessageCookieReplyType
 	reply.Receiver = recv
 
